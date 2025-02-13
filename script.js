@@ -3,6 +3,7 @@
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
 // BANKIST APP
+const EUROTOUSD = 1.04;
 
 // Data
 const account1 = {
@@ -61,6 +62,9 @@ const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
+/////////////////////////////////////////////////
+/////////////////////////////////////////////////
+// Helper functions
 const displayMovements = (movements) => {
   // empty the container
   containerMovements.innerHTML = '';
@@ -76,41 +80,43 @@ const displayMovements = (movements) => {
             <div class="movements__value">${move}</div>
         </div>
     `;
-
     // populate the container
     containerMovements.insertAdjacentHTML('afterbegin', html);
   });
 };
+
 displayMovements(account1.movements);
 
-/////////////////////////////////////////////////
-/////////////////////////////////////////////////
-// LECTURES NOTES
+// username creation
+const createUsernameInitials = (accs) => {
+  accs.forEach((acc) => {
+    acc.usernameInitials = acc.owner
+      .toLowerCase()
+      .split(' ')
+      .map((name) => name[0])
+      .join('');
+  });
+};
+createUsernameInitials(accounts);
+console.log(accounts);
 
-// const currencies = new Map([
-//   ['USD', 'United States dollar'],
-//   ['EUR', 'Euro'],
-//   ['GBP', 'Pound sterling'],
-// ]);
+// conversion from euro to usd
+const movements = account1.movements;
+const movementsUSD = movements.map((move) => {
+  return move * EUROTOUSD;
+});
 
-// const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
+// filter deposits
+const deposits = movements.filter((move) => {
+  return move > 0;
+});
+console.log(deposits);
+console.log(movements);
 
-/////////////////////////////////////////////////
+// withdrawals
+const withdrawals = movements.filter((move) => {
+  return move < 0;
+});
 
-// for (const [i, move] of movements.entries()) {
-//   if (move > 0) {
-//     console.log(`Movement ${i + 1}: You've made a deposit of ${move}`);
-//   } else {
-//     console.log(`Movement ${i + 1}: You withdrew ${move}`);
-//   }
-// }
-
-// console.log('--------Foreach------');
-// //forEach takes in a callback function to tell the forEach method instruction to execute
-// movements.forEach(function (move, i, arr) {
-//   if (move > 0) {
-//     console.log(`Movement ${i + 1}: You've made a deposit of ${move}`);
-//   } else {
-//     console.log(`Movement ${i + 1}: You withdrew ${Math.abs(move)}`);
-//   }
-// });
+console.log(withdrawals);
+console.log(movements);
