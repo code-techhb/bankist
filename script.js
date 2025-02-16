@@ -83,7 +83,6 @@ const displayMovements = (movements) => {
     containerMovements.insertAdjacentHTML('afterbegin', html);
   });
 };
-displayMovements(account1.movements);
 
 // update balance in the UI
 const calcDisplayBalance = (movements) => {
@@ -97,7 +96,7 @@ calcDisplayBalance(account1.movements);
 // username creation
 const createUsernameInitials = (accs) => {
   accs.forEach((acc) => {
-    acc.usernameInitials = acc.owner
+    acc.username = acc.owner
       .toLowerCase()
       .split(' ')
       .map((name) => name[0])
@@ -107,55 +106,80 @@ const createUsernameInitials = (accs) => {
 createUsernameInitials(accounts);
 
 // Display balance
-const calcDisplaySummary = (movements) => {
-  const incomes = movements
+const calcDisplaySummary = (account) => {
+  const incomes = account.movements
     .filter((move) => move > 0)
     .reduce((total, move) => (total += move), 0);
 
   labelSumIn.textContent = `${incomes}€`;
 
-  const outMoney = movements
+  const outMoney = account.movements
     .filter((move) => move < 0)
     .reduce((spent, move) => (spent += move), 0);
   labelSumOut.textContent = `${Math.abs(outMoney)}€`;
 
-  const interst = movements
+  const interst = account.movements
     .filter((move) => move > 0)
-    .map((deposit) => (deposit * 1.2) / 100)
+    .map((deposit) => (deposit * account.interestRate) / 100)
     .filter((interest) => interest >= 1)
     .reduce((total, currentEL) => total + currentEL, 0);
 
   labelSumInterest.textContent = `${interst}€`;
 };
-calcDisplaySummary(account1.movements);
 
-// LECTURE
-// conversion from euro to usd
-const movements = account1.movements;
-const movementsUSD = movements.map((move) => {
-  return move * EUROTOUSD;
+// user login
+let currentAccount;
+btnLogin.addEventListener('click', (event) => {
+  event.preventDefault();
+  currentAccount = accounts.find((acc) => {
+    return acc.username === inputLoginUsername.value;
+  });
+  console.log(currentAccount);
+
+  if (currentAccount?.pin === Number(inputLoginPin.value)) {
+    labelWelcome.textContent = `Welcome, ${currentAccount.owner.split(' ')[0]}`;
+    containerApp.style.opacity = 100;
+    inputLoginUsername.value = inputLoginPin.value = '';
+    inputLoginPin.blur();
+    displayMovements(currentAccount.movements);
+    calcDisplayBalance(currentAccount.movements);
+    calcDisplaySummary(currentAccount);
+
+    console.log('Logged in');
+  }
 });
 
-// filter deposits
-const deposits = movements.filter((move) => {
-  return move > 0;
-});
-// console.log(deposits);
-// console.log(movements);
+// LECTURE NOTES
+// // conversion from euro to usd
+// const movements = account1.movements;
+// const movementsUSD = movements.map((move) => {
+//   return move * EUROTOUSD;
+// });
 
-// withdrawals
-const withdrawals = movements.filter((move) => {
-  return move < 0;
-});
+// // filter deposits
+// const deposits = movements.filter((move) => {
+//   return move > 0;
+// });
+// // console.log(deposits);
+// // console.log(movements);
 
-const totalDepositUSD = account1.movements
-  .filter((move) => {
-    return move > 0;
-  })
-  .map((move) => {
-    return move * EUROTOUSD;
-  })
-  .reduce((total, currentEL) => {
-    return (total += currentEL);
-  }, 0);
-console.log(totalDepositUSD);
+// // withdrawals
+// const withdrawals = movements.filter((move) => {
+//   return move < 0;
+// });
+
+// const totalDepositUSD = account1.movements
+//   .filter((move) => {
+//     return move > 0;
+//   })
+//   .map((move) => {
+//     return move * EUROTOUSD;
+//   })
+//   .reduce((total, currentEL) => {
+//     return (total += currentEL);
+//   }, 0);
+// console.log(totalDepositUSD);
+
+// // find method: Retrieve one element from an arr based on a condition. It does accept a callback function too.
+// const firstWithDraw = movements.find((move) => move < 0);
+// console.log(firstWithDraw);
