@@ -126,6 +126,7 @@ const updateUI = (account) => {
 
 // -------------- Event Listeners ------------------
 let currentAccount;
+
 btnLogin.addEventListener('click', (event) => {
   event.preventDefault();
   currentAccount = accounts.find((acc) => {
@@ -158,5 +159,34 @@ btnTransfer.addEventListener('click', (e) => {
     currentAccount.movements.push(-amount);
     receiverAccount.movements.push(amount);
     updateUI(currentAccount);
+  }
+});
+
+btnClose.addEventListener('click', (e) => {
+  e.preventDefault();
+  if (
+    currentAccount.username === inputCloseUsername.value &&
+    currentAccount.pin === Number(inputClosePin.value)
+  ) {
+    const index = accounts.findIndex(
+      (acc) => acc.username === currentAccount.username
+    );
+    accounts.splice(index, 1);
+    containerApp.style.opacity = 0;
+    inputCloseUsername.value = inputClosePin.value = '';
+    labelWelcome.textContent = `Log in to get started`;
+  }
+});
+
+btnLoan.addEventListener('click', (e) => {
+  e.preventDefault();
+  const amount = Number(inputLoanAmount.value);
+  if (
+    amount > 0 &&
+    currentAccount.movements.some((move) => move >= amount * 0.1)
+  ) {
+    currentAccount.movements.push(amount);
+    updateUI(currentAccount);
+    inputLoanAmount.value = '';
   }
 });
