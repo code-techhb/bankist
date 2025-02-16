@@ -1,5 +1,4 @@
 'use strict';
-
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
 // BANKIST APP
@@ -84,8 +83,16 @@ const displayMovements = (movements) => {
     containerMovements.insertAdjacentHTML('afterbegin', html);
   });
 };
-
 displayMovements(account1.movements);
+
+// update balance in the UI
+const calcDisplayBalance = (movements) => {
+  const balance = movements.reduce((accumulator, movement) => {
+    return (accumulator += movement);
+  }, 0);
+  labelBalance.textContent = `€ ${balance}`;
+};
+calcDisplayBalance(account1.movements);
 
 // username creation
 const createUsernameInitials = (accs) => {
@@ -98,8 +105,31 @@ const createUsernameInitials = (accs) => {
   });
 };
 createUsernameInitials(accounts);
-console.log(accounts);
 
+// Display balance
+const calcDisplaySummary = (movements) => {
+  const incomes = movements
+    .filter((move) => move > 0)
+    .reduce((total, move) => (total += move), 0);
+
+  labelSumIn.textContent = `${incomes}€`;
+
+  const outMoney = movements
+    .filter((move) => move < 0)
+    .reduce((spent, move) => (spent += move), 0);
+  labelSumOut.textContent = `${Math.abs(outMoney)}€`;
+
+  const interst = movements
+    .filter((move) => move > 0)
+    .map((deposit) => (deposit * 1.2) / 100)
+    .filter((interest) => interest >= 1)
+    .reduce((total, currentEL) => total + currentEL, 0);
+
+  labelSumInterest.textContent = `${interst}€`;
+};
+calcDisplaySummary(account1.movements);
+
+// LECTURE
 // conversion from euro to usd
 const movements = account1.movements;
 const movementsUSD = movements.map((move) => {
@@ -110,13 +140,22 @@ const movementsUSD = movements.map((move) => {
 const deposits = movements.filter((move) => {
   return move > 0;
 });
-console.log(deposits);
-console.log(movements);
+// console.log(deposits);
+// console.log(movements);
 
 // withdrawals
 const withdrawals = movements.filter((move) => {
   return move < 0;
 });
 
-console.log(withdrawals);
-console.log(movements);
+const totalDepositUSD = account1.movements
+  .filter((move) => {
+    return move > 0;
+  })
+  .map((move) => {
+    return move * EUROTOUSD;
+  })
+  .reduce((total, currentEL) => {
+    return (total += currentEL);
+  }, 0);
+console.log(totalDepositUSD);
