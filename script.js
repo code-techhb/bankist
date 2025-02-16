@@ -63,14 +63,11 @@ const inputClosePin = document.querySelector('.form__input--pin');
 
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
-// Helper functions
+// -------------- Helper Functions ------------------
 const displayMovements = (movements) => {
-  // empty the container
   containerMovements.innerHTML = '';
-
   movements.forEach(function (move, i) {
     const typeOfMove = move > 0 ? 'deposit' : 'withdrawal';
-
     const html = `
         <div class="movements__row">
             <div class="movements__type movements__type--${typeOfMove}">${
@@ -79,21 +76,17 @@ const displayMovements = (movements) => {
             <div class="movements__value">${move}</div>
         </div>
     `;
-    // populate the container
     containerMovements.insertAdjacentHTML('afterbegin', html);
   });
 };
 
-// update balance in the UI
-const calcDisplayBalance = (movements) => {
-  const balance = movements.reduce((accumulator, movement) => {
+const calcDisplayBalance = (account) => {
+  account.balance = account.movements.reduce((accumulator, movement) => {
     return (accumulator += movement);
   }, 0);
-  labelBalance.textContent = `€ ${balance}`;
+  labelBalance.textContent = `€ ${account.balance}`;
 };
-calcDisplayBalance(account1.movements);
 
-// username creation
 const createUsernameInitials = (accs) => {
   accs.forEach((acc) => {
     acc.username = acc.owner
@@ -105,12 +98,10 @@ const createUsernameInitials = (accs) => {
 };
 createUsernameInitials(accounts);
 
-// Display balance
 const calcDisplaySummary = (account) => {
   const incomes = account.movements
     .filter((move) => move > 0)
     .reduce((total, move) => (total += move), 0);
-
   labelSumIn.textContent = `${incomes}€`;
 
   const outMoney = account.movements
@@ -127,59 +118,45 @@ const calcDisplaySummary = (account) => {
   labelSumInterest.textContent = `${interst}€`;
 };
 
-// user login
+const updateUI = (account) => {
+  displayMovements(account.movements);
+  calcDisplayBalance(account);
+  calcDisplaySummary(account);
+};
+
+// -------------- Event Listeners ------------------
 let currentAccount;
 btnLogin.addEventListener('click', (event) => {
   event.preventDefault();
   currentAccount = accounts.find((acc) => {
     return acc.username === inputLoginUsername.value;
   });
-  console.log(currentAccount);
 
   if (currentAccount?.pin === Number(inputLoginPin.value)) {
     labelWelcome.textContent = `Welcome, ${currentAccount.owner.split(' ')[0]}`;
     containerApp.style.opacity = 100;
     inputLoginUsername.value = inputLoginPin.value = '';
     inputLoginPin.blur();
-    displayMovements(currentAccount.movements);
-    calcDisplayBalance(currentAccount.movements);
-    calcDisplaySummary(currentAccount);
-
-    console.log('Logged in');
+    updateUI(currentAccount);
   }
 });
 
-// LECTURE NOTES
-// // conversion from euro to usd
-// const movements = account1.movements;
-// const movementsUSD = movements.map((move) => {
-//   return move * EUROTOUSD;
-// });
+btnTransfer.addEventListener('click', (e) => {
+  e.preventDefault();
+  const amount = Number(inputTransferAmount.value);
+  const receiverAccount = accounts.find(
+    (acc) => acc.username === inputTransferTo.value
+  );
+  inputTransferAmount.value = inputTransferTo.value = '';
 
-// // filter deposits
-// const deposits = movements.filter((move) => {
-//   return move > 0;
-// });
-// // console.log(deposits);
-// // console.log(movements);
-
-// // withdrawals
-// const withdrawals = movements.filter((move) => {
-//   return move < 0;
-// });
-
-// const totalDepositUSD = account1.movements
-//   .filter((move) => {
-//     return move > 0;
-//   })
-//   .map((move) => {
-//     return move * EUROTOUSD;
-//   })
-//   .reduce((total, currentEL) => {
-//     return (total += currentEL);
-//   }, 0);
-// console.log(totalDepositUSD);
-
-// // find method: Retrieve one element from an arr based on a condition. It does accept a callback function too.
-// const firstWithDraw = movements.find((move) => move < 0);
-// console.log(firstWithDraw);
+  if (
+    amount > 0 &&
+    receiverAccount &&
+    currentAccount.balance >= amount &&
+    receiverAccount?.username !== currentAccount.username
+  ) {
+    currentAccount.movements.push(-amount);
+    receiverAccount.movements.push(amount);
+    updateUI(currentAccount);
+  }
+});
