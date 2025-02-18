@@ -64,16 +64,19 @@ const inputClosePin = document.querySelector('.form__input--pin');
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
 // -------------- Helper Functions ------------------
-const displayMovements = (movements) => {
+const displayMovements = (movements, sort = false) => {
   containerMovements.innerHTML = '';
-  movements.forEach(function (move, i) {
+
+  const movs = sort ? movements.slice().sort((a, b) => a - b) : movements;
+
+  movs.forEach(function (move, i) {
     const typeOfMove = move > 0 ? 'deposit' : 'withdrawal';
     const html = `
         <div class="movements__row">
             <div class="movements__type movements__type--${typeOfMove}">${
       i + 1
     } ${typeOfMove}</div>
-            <div class="movements__value">${move}</div>
+            <div class="movements__value">${move}€</div>
         </div>
     `;
     containerMovements.insertAdjacentHTML('afterbegin', html);
@@ -84,7 +87,7 @@ const calcDisplayBalance = (account) => {
   account.balance = account.movements.reduce((accumulator, movement) => {
     return (accumulator += movement);
   }, 0);
-  labelBalance.textContent = `€ ${account.balance}`;
+  labelBalance.textContent = `${account.balance}€`;
 };
 
 const createUsernameInitials = (accs) => {
@@ -189,4 +192,11 @@ btnLoan.addEventListener('click', (e) => {
     updateUI(currentAccount);
     inputLoanAmount.value = '';
   }
+});
+
+let sortedState = false;
+btnSort.addEventListener('click', (e) => {
+  e.preventDefault();
+  displayMovements(currentAccount.movements, !sortedState);
+  sortedState = !sortedState;
 });
