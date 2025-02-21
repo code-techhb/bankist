@@ -76,21 +76,33 @@ const inputClosePin = document.querySelector('.form__input--pin');
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
 // -------------- Helper Functions ------------------
-const displayMovements = (movements, sort = false) => {
+const displayMovements = (acc, sort = false) => {
   containerMovements.innerHTML = '';
 
-  const movs = sort ? movements.slice().sort((a, b) => a - b) : movements;
+  const movs = sort
+    ? acc.movements.slice().sort((a, b) => a - b)
+    : acc.movements;
 
   movs.forEach(function (move, i) {
     const typeOfMove = move > 0 ? 'deposit' : 'withdrawal';
+    const date = new Date(acc.movementsDates[i]);
+    const displayDate = `${(date.getMonth() + 1)
+      .toString()
+      .padStart(2, '0')}/${date
+      .getDate()
+      .toString()
+      .padStart(2, '0')}/${date.getFullYear()}`;
+
     const html = `
         <div class="movements__row">
             <div class="movements__type movements__type--${typeOfMove}">${
       i + 1
     } ${typeOfMove}</div>
-            <div class="movements__value">${move.toFixed(2)}€</div>
+       <div class="movements__date">${displayDate}</div>
+        <div class="movements__value">${move.toFixed(2)}€</div>
         </div>
     `;
+
     containerMovements.insertAdjacentHTML('afterbegin', html);
   });
 };
@@ -134,13 +146,33 @@ const calcDisplaySummary = (account) => {
 };
 
 const updateUI = (account) => {
-  displayMovements(account.movements);
+  displayMovements(account);
   calcDisplayBalance(account);
   calcDisplaySummary(account);
 };
 
 // -------------- Event Listeners ------------------
 let currentAccount;
+
+// 🚨 Temporary
+currentAccount = account1;
+updateUI(currentAccount);
+containerApp.style.opacity = 100;
+
+// Date
+const now = new Date();
+
+labelDate.textContent = `${(now.getMonth() + 1)
+  .toString()
+  .padStart(2, '0')}/${now
+  .getDate()
+  .toString()
+  .padStart(2, '0')}/${now.getFullYear()}, ${now
+  .getHours()
+  .toString()
+  .padStart(2, '0')
+  .toString()
+  .padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
 
 btnLogin.addEventListener('click', (event) => {
   event.preventDefault();
@@ -151,6 +183,17 @@ btnLogin.addEventListener('click', (event) => {
   if (currentAccount?.pin === +inputLoginPin.value) {
     labelWelcome.textContent = `Welcome, ${currentAccount.owner.split(' ')[0]}`;
     containerApp.style.opacity = 100;
+    labelDate.textContent = `${(now.getMonth() + 1)
+      .toString()
+      .padStart(2, '0')}/${now
+      .getDate()
+      .toString()
+      .padStart(2, '0')}/${now.getFullYear()}, ${now
+      .getHours()
+      .toString()
+      .padStart(2, '0')
+      .toString()
+      .padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
     inputLoginUsername.value = inputLoginPin.value = '';
     inputLoginPin.blur();
     updateUI(currentAccount);
@@ -173,6 +216,12 @@ btnTransfer.addEventListener('click', (e) => {
   ) {
     currentAccount.movements.push(-amount);
     receiverAccount.movements.push(amount);
+
+    // add transfer dates
+    currentAccount.movementsDates.push(new Date().toISOString());
+    receiverAccount.movementsDates.push(new Date().toISOString());
+
+    //update ui
     updateUI(currentAccount);
   }
 });
@@ -201,6 +250,8 @@ btnLoan.addEventListener('click', (e) => {
     currentAccount.movements.some((move) => move >= amount * 0.1)
   ) {
     currentAccount.movements.push(amount);
+    currentAccount.movementsDates.push(new Date().toISOString());
+
     updateUI(currentAccount);
     inputLoanAmount.value = '';
   }
@@ -209,7 +260,7 @@ btnLoan.addEventListener('click', (e) => {
 let sortedState = false;
 btnSort.addEventListener('click', (e) => {
   e.preventDefault();
-  displayMovements(currentAccount.movements, !sortedState);
+  displayMovements(currentAccount, !sortedState);
   sortedState = !sortedState;
 });
 
@@ -236,3 +287,9 @@ btnSort.addEventListener('click', (e) => {
 // //rouding decimals
 // console.log((2.45).toFixed(4)); // this is a string
 // console.log(+(2.458789).toFixed(4)); // converted to num
+
+//  labelBalance.addEventListener('click', function () {
+//   [...document.querySelectorAll('.movements__row')].forEach((row, i) => {
+//     if (i % 2 === 0) row.style.backgroundColor = 'pink';
+//   });
+// });

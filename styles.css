@@ -169,7 +169,7 @@ nav {
   font-size: 1.1rem;
   text-transform: uppercase;
   font-weight: 500;
-  color: var(--white-eee);
+  color: var(--gray-444);
 }
 
 .movements__type--deposit {
