@@ -79,13 +79,20 @@ const inputClosePin = document.querySelector('.form__input--pin');
 const displayMovements = (acc, sort = false) => {
   containerMovements.innerHTML = '';
 
-  const movs = sort
-    ? acc.movements.slice().sort((a, b) => a - b)
-    : acc.movements;
+  const movementAndDate = acc.movements.map((move, i) => {
+    return { movement: move, movementDate: acc.movementsDates.at(i) };
+  });
+  // const movs = sort
+  //   ? acc.movements.slice().sort((a, b) => a - b)
+  //   : acc.movements;
+  if (sort) {
+    movementAndDate.sort((a, b) => a.movement - b.movement);
+  }
 
-  movs.forEach(function (move, i) {
-    const typeOfMove = move > 0 ? 'deposit' : 'withdrawal';
-    const date = new Date(acc.movementsDates[i]);
+  movementAndDate.forEach(function (obj, i) {
+    const { movement, movementDate } = obj;
+    const typeOfMove = movement > 0 ? 'deposit' : 'withdrawal';
+    const date = new Date(movementDate);
     const displayDate = `${(date.getMonth() + 1)
       .toString()
       .padStart(2, '0')}/${date
@@ -99,7 +106,7 @@ const displayMovements = (acc, sort = false) => {
       i + 1
     } ${typeOfMove}</div>
        <div class="movements__date">${displayDate}</div>
-        <div class="movements__value">${move.toFixed(2)}€</div>
+        <div class="movements__value">${movement.toFixed(2)}€</div>
         </div>
     `;
 
