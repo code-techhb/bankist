@@ -194,13 +194,27 @@ const updateUI = (account) => {
   calcDisplaySummary(account);
 };
 
-// -------------- Event Listeners ------------------
-let currentAccount;
+const startLogoutTimer = () => {
+  let time = 300;
+  const tick = () => {
+    const min = String(Math.trunc(time / 60)).padStart(2, 0);
+    const sec = String(time % 60).padStart(2, 0);
+    labelTimer.textContent = `${min}:${sec}`;
 
-// 🚨 Temporary
-currentAccount = account1;
-updateUI(currentAccount);
-containerApp.style.opacity = 100;
+    if (time === 0) {
+      clearInterval(timer);
+      labelWelcome.textContent = 'Login to get started 🏦';
+      containerApp.style.opacity = 0;
+    }
+    time--;
+  };
+  tick();
+  const timer = setInterval(tick, 1000);
+  return timer;
+};
+
+// -------------- Event Listeners ------------------
+let currentAccount, timer;
 
 btnLogin.addEventListener('click', (event) => {
   event.preventDefault();
@@ -227,6 +241,10 @@ btnLogin.addEventListener('click', (event) => {
 
     inputLoginUsername.value = inputLoginPin.value = '';
     inputLoginPin.blur();
+
+    if (timer) clearInterval(timer);
+    timer = startLogoutTimer();
+
     updateUI(currentAccount);
   }
 });
@@ -254,6 +272,10 @@ btnTransfer.addEventListener('click', (e) => {
 
     //update ui
     updateUI(currentAccount);
+
+    //reset timer
+    clearInterval(timer);
+    timer = startLogoutTimer();
   }
 });
 
@@ -280,12 +302,17 @@ btnLoan.addEventListener('click', (e) => {
     amount > 0 &&
     currentAccount.movements.some((move) => move >= amount * 0.1)
   ) {
-    currentAccount.movements.push(amount);
-    currentAccount.movementsDates.push(new Date().toISOString());
+    setTimeout(() => {
+      currentAccount.movements.push(amount);
+      currentAccount.movementsDates.push(new Date().toISOString());
 
-    updateUI(currentAccount);
+      updateUI(currentAccount);
+    }, 1500);
     inputLoanAmount.value = '';
   }
+  //reset timer
+  clearInterval(timer);
+  timer = startLogoutTimer();
 });
 
 let sortedState = false;
@@ -326,8 +353,26 @@ btnSort.addEventListener('click', (e) => {
 // });
 
 // Operations with Dates
-const daysAgo = (date1, date2) => {
-  return Math.abs((date2 - date1) / (1000 * 60 * 60 * 24));
-};
+// const daysAgo = (date1, date2) => {
+//   return Math.abs((date2 - date1) / (1000 * 60 * 60 * 24));
+// };
 
-console.log(daysAgo(new Date(2025, 1, 30), new Date(2025, 1, 21)));
+// console.log(daysAgo(new Date(2025, 1, 30), new Date(2025, 1, 21)));
+
+// timers in Js
+
+// function time 1: setTimeout(callback function, time) > this is asynchronuous js
+
+//cancel the time out before the delay
+// const Ingredients = ['Olives', 'Spinach'];
+// const pizzaTime = setTimeout(
+//   (ing1, ing2) => {
+//     return console.log(`Pizza with ${ing1} with ${ing2}`);
+//   },
+//   3000,
+//   ...Ingredients
+// );
+
+// console.log('Waiiting...');
+
+// if (Ingredients.includes('Spinach')) clearTimeout(pizzaTime);
