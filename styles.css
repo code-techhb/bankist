@@ -1,23 +1,23 @@
 :root {
-  --gray-444: #444;
-  --gray-ccc: #ccc;
-  --gray-bbb: #bbb;
-  --gray-777: #777;
-  --gray-888: #888;
-  --white-f3: #f3f3f3;
-  --white-eee: #eee;
-  --solid-white: #fff;
-  --primary-color-1: #39b385;
-  --primary-color-1-1: #9be15d;
-  --primary-variant-1: #66c873;
-  --secondary-color-1: #e52a5a;
-  --secondary-color-1-1: #ff585f;
-  --secondary-variant-1: #f5465d;
-  --tertiary-color-1: #ffb003;
-  --tertiary-color-1-1: #ffcb03;
-  --transparent-1: rgba(255, 255, 255, 0.4);
-  --transparent-2: rgba(255, 255, 255, 0.6);
-  --transparent-3: rgba(255, 255, 255, 0.8);
+  --gray-444: #2d3748;
+  --gray-ccc: #cbd5e0;
+  --gray-bbb: #a0aec0;
+  --gray-777: #718096;
+  --gray-888: #4a5568;
+  --white-f3: #f7fafc;
+  --white-eee: #edf2f7;
+  --solid-white: #ffffff;
+  --primary-color-1: #3182ce;
+  --primary-color-1-1: #63b3ed;
+  --primary-variant-1: #4299e1;
+  --secondary-color-1: #805ad5;
+  --secondary-color-1-1: #9f7aea;
+  --secondary-variant-1: #6b46c1;
+  --tertiary-color-1: #f6ad55;
+  --tertiary-color-1-1: #fbd38d;
+  --transparent-1: rgba(255, 255, 255, 0.5);
+  --transparent-2: rgba(255, 255, 255, 0.7);
+  --transparent-3: rgba(255, 255, 255, 0.9);
 }
 
 * {
@@ -34,12 +34,16 @@ html {
 body {
   font-family: 'Poppins', sans-serif;
   color: var(--gray-444);
-  background-color: var(--white-f3);
+  background-color: var(--white-eee);
   height: 100vh;
   padding: 2rem;
   display: flex;
   flex-direction: column;
 }
+
+/* not logged in yet */
+
+/* end of */
 
 nav {
   display: flex;
@@ -338,4 +342,177 @@ h2 {
 footer {
   font-size: 1.3rem;
   text-align: center;
+  padding: 2rem 0;
+  color: var(--gray-777);
+  margin-top: 2rem;
+}
+
+footer a {
+  color: var(--primary-color-1);
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s;
+  position: relative;
+}
+
+footer a:hover {
+  color: var(--primary-variant-1);
+}
+
+footer a::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: -2px;
+  left: 0;
+  background-color: var(--primary-variant-1);
+  transition: width 0.3s ease;
+}
+
+footer a:hover::after {
+  width: 100%;
+}
+
+/* Media Queries */
+@media (max-width: 900px) {
+  html {
+    /* 9px instead of 10px */
+    font-size: 56.25%;
+  }
+
+  .app {
+    max-width: 90%;
+  }
+}
+
+@media (max-width: 768px) {
+  html {
+    /* 8px instead of 10px */
+    font-size: 50%;
+  }
+
+  body {
+    padding: 1.5rem;
+  }
+
+  .app {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto auto auto auto;
+    gap: 1.5rem;
+  }
+
+  .balance {
+    grid-column: 1;
+  }
+
+  .movements {
+    grid-row: 2;
+    max-height: 40rem;
+  }
+
+  .summary {
+    grid-row: 3;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+
+  .operation {
+    padding: 2rem 3rem;
+  }
+
+  .summary__value {
+    margin-right: 1.5rem;
+  }
+
+  .btn--sort {
+    margin-top: 1rem;
+    margin-left: 0;
+    width: 100%;
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  html {
+    /* 7px instead of 10px */
+    font-size: 43.75%;
+  }
+
+  body {
+    padding: 1rem;
+  }
+
+  nav {
+    flex-direction: column;
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .login {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .login__input {
+    width: 40%;
+  }
+
+  .balance {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1rem;
+  }
+
+  .movements__row {
+    padding: 2rem 2rem;
+    flex-wrap: wrap;
+  }
+
+  .movements__type,
+  .movements__date {
+    margin-bottom: 0.5rem;
+  }
+
+  .movements__value {
+    width: 100%;
+    text-align: right;
+    margin-top: 0.5rem;
+  }
+
+  .form {
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(5, auto);
+    gap: 1rem;
+  }
+
+  .form.form--loan {
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(3, auto);
+  }
+
+  .form__label {
+    order: -1;
+  }
+
+  .form__btn {
+    grid-column: 1;
+    padding: 0.5rem;
+  }
+
+  .form__label--loan {
+    grid-row: 1;
+  }
+
+  .logout-timer {
+    text-align: center;
+  }
+}
+
+@media (max-width: 350px) {
+  html {
+    /* 6px instead of 10px */
+    font-size: 37.5%;
+  }
 }

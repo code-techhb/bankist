@@ -45,7 +45,28 @@ const account2 = {
   locale: 'en-US',
 };
 
-const accounts = [account1, account2];
+const account3 = {
+  owner: 'Houlaymatou B.',
+  movements: [6500, 90, -34, 389, 75980, -450, 567, 3268, -2050, 1058],
+  interestRate: 0,
+  pin: 2025,
+  movementsDates: [
+    '2025-03-12T13:15:33.035Z',
+    '2025-01-15T09:48:16.867Z',
+    '2025-02-22T06:04:23.907Z',
+    '2025-01-25T14:18:46.235Z',
+    '2025-02-05T16:33:06.386Z',
+    '2025-02-19T16:35:04.386Z',
+    '2025-03-01T14:43:26.374Z',
+    '2025-01-18T18:49:59.371Z',
+    '2025-03-14T12:01:20.894Z',
+    '2025-03-16T12:01:20.894Z',
+  ],
+  currency: 'USD',
+  locale: 'en-US',
+};
+
+const accounts = [account1, account2, account3];
 
 // Elements
 const labelWelcome = document.querySelector('.welcome');
